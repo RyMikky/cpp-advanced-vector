@@ -241,6 +241,9 @@ public:
     template <typename... Args>
     iterator Emplace(const_iterator pos, Args&&... args) {
 
+        // проверяем попадание итератора в диапазон данных вектора
+        assert(begin() <= pos && pos <= end());
+
         // проверяем наличие свободного места при текущем капасити
         if (size_ == Capacity())
         {
@@ -255,11 +258,17 @@ public:
     }
 
     void PopBack() {
-        std::destroy_at(&data_[--size_]);
+        // выполняется при условии того, что в векторе есть хотя бы одно значение
+        if (size_ > 0 && data_.GetAddress() != nullptr) {
+            std::destroy_at(&data_[--size_]);
+        }
     }
     iterator Erase(const_iterator pos) {
 
-        if (pos == end()) {
+        // проверяем попадание итератора в диапазон данных вектора
+        assert(begin() <= pos && pos <= end());
+
+        if (pos == end() - 1) {
             PopBack();                                              // если pos указывает на конец диапазона то вызываем PopBack();
             return const_cast<iterator>(end() - 1);
         }
